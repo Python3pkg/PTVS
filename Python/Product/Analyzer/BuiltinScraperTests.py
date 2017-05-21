@@ -23,9 +23,9 @@ from pprint import pformat
 from BuiltinScraper import parse_doc_str, BUILTIN, __builtins__, get_overloads_from_doc_string, TOKENS_REGEX
 
 try:
-    unicode
+    str
 except NameError:
-    from BuiltinScraper import unicode
+    from BuiltinScraper import str
 import sys
 
 class Test_BuiltinScraperTests(unittest.TestCase):
@@ -47,30 +47,30 @@ class Test_BuiltinScraperTests(unittest.TestCase):
             extra_keys = set(a.keys()) - set(e.keys())
             mismatched_keys = [k for k in set(a.keys()) & set(e.keys()) if a[k] != e[k]]
             if missing_keys:
-                print('%sDid not received following keys: %s' % (indent, ', '.join(missing_keys)))
+                print(('%sDid not received following keys: %s' % (indent, ', '.join(missing_keys))))
             if extra_keys:
-                print('%sDid not expect following keys: %s' % (indent, ', '.join(extra_keys)))
+                print(('%sDid not expect following keys: %s' % (indent, ', '.join(extra_keys))))
             for k in mismatched_keys:
                 if isinstance(e[k], dict) and isinstance(a[k], dict):
                     check_dict(e[k], a[k], indent + ' ')
                 elif (isinstance(e[k], tuple) and isinstance(a[k], tuple) or isinstance(e[k], list) and isinstance(a[k], list)):
                     check_seq(e[k], a[k], indent + ' ')
                 else:
-                    print('%sExpected "%s": "%s"' % (indent, k, e[k]))
-                    print('%sActual   "%s": "%s"' % (indent, k, a[k]))
+                    print(('%sExpected "%s": "%s"' % (indent, k, e[k])))
+                    print(('%sActual   "%s": "%s"' % (indent, k, a[k])))
                     print('')
 
         def check_seq(e, a, indent):
             if e == a:
                 return
-            for i, (e2, a2) in enumerate(zip(e, a)):
+            for i, (e2, a2) in enumerate(list(zip(e, a))):
                 if isinstance(e2, dict) and isinstance(a2, dict):
                     check_dict(e2, a2, indent + ' ')
                 elif (isinstance(e2, tuple) and isinstance(a2, tuple) or isinstance(e2, list) and isinstance(a2, list)):
                     check_seq(e2, a2, indent + ' ')
                 elif e1 != a1:
-                    print('%sExpected "%s"' % (indent, e2))
-                    print('%sActual   "%s"' % (indent, a2))
+                    print(('%sExpected "%s"' % (indent, e2)))
+                    print(('%sActual   "%s"' % (indent, a2)))
                     print('')
 
         for e1, a1 in zip(expected, r):
@@ -222,7 +222,7 @@ and there is at least one character in B, False otherwise.''',
                     {'arg_format': '**', 'name': 'kwargs'}
                 ),
                 'doc': '',
-                'ret_type': [(BUILTIN, unicode.__name__)]
+                'ret_type': [(BUILTIN, str.__name__)]
             }]
         )
     

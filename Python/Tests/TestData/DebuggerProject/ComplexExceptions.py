@@ -1,9 +1,9 @@
-import cPickle
+import pickle
 
 # raise an exception that's not a built-in
 try:
 	print('raising')
-	raise cPickle.PickleError
+	raise pickle.PickleError
 except:
 	print('caught')
 

@@ -14,7 +14,7 @@
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
 
-from __future__ import with_statement
+
 
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.0.0.0"
@@ -26,7 +26,7 @@ import socket
 import traceback
 from types import CodeType, FunctionType
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread
 
@@ -67,7 +67,7 @@ class _TestOutput(object):
     def isatty(self):
         return True
 
-    def next(self):
+    def __next__(self):
         pass
     
     @property
@@ -105,7 +105,7 @@ class _IpcChannel(object):
     def __init__(self, socket):
         self.socket = socket
         self.seq = 0
-        self.lock = thread.allocate_lock()
+        self.lock = _thread.allocate_lock()
 
     def close(self):
         self.socket.close()

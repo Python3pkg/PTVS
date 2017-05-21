@@ -52,7 +52,7 @@ def _find_vcvarsall(version):
     try:
         from winreg import HKEY_LOCAL_MACHINE
     except ImportError:
-        from _winreg import HKEY_LOCAL_MACHINE
+        from winreg import HKEY_LOCAL_MACHINE
     for sxs_key in [
         Reg.read_values(HKEY_LOCAL_MACHINE, r'SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VC7'),
         Reg.read_values(HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\VisualStudio\SxS\VC7')
@@ -94,9 +94,9 @@ else:
 
 pykinectaudio_ext = Extension(
     'pykinect.audio.PyKinectAudio',
-    include_dirs=filter(None, ['src', kinectsdk_inc]),
+    include_dirs=[_f for _f in ['src', kinectsdk_inc] if _f],
     libraries=['Msdmo', 'dmoguids', 'mf', 'mfuuid', 'mfplat', 'avrt', 'Kinect10'],
-    library_dirs=filter(None, [kinectsdk_lib]),
+    library_dirs=[_f for _f in [kinectsdk_lib] if _f],
     sources=[
         'src\\stdafx.cpp',
         'src\\PyKinectAudio.cpp',

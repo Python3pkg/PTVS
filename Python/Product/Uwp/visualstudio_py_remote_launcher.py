@@ -43,7 +43,7 @@ def debug_remote(
     DEBUG_STDLIB = debug_stdlib
 
     import datetime
-    print('%s: Remote launcher starting ptvsd attach wait with File: %s, Port: %d, Id: %s\n' % (datetime.datetime.now(), file, port_num, debug_id))
+    print(('%s: Remote launcher starting ptvsd attach wait with File: %s, Port: %d, Id: %s\n' % (datetime.datetime.now(), file, port_num, debug_id)))
 
     ptvsd.enable_attach(debug_id, address = ('0.0.0.0', port_num), redirect_output = redirect_output)
     try:

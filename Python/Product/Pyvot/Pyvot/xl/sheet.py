@@ -99,7 +99,7 @@ class Workbook(object):
             self.xlWorkbook = excel.Workbooks.Add()
             assert not self.xlWorkbook is None
         elif (len(args) == 1):
-            if isinstance(args[0], basestring):
+            if isinstance(args[0], str):
                 filename = args[0]
                 self.xlWorkbook = com_utils.get_running_xlWorkbook_for_filename(filename)
                 if (self.xlWorkbook == None):
@@ -158,7 +158,7 @@ class Workbook(object):
         if (name == None):
             name = "values"
         
-        if isinstance(obj, basestring):
+        if isinstance(obj, str):
             obj = [ obj ]
 
         obj = list(obj)

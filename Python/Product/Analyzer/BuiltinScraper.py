@@ -22,12 +22,12 @@ import sys
 import types
 import PythonScraper
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread
 
 try:
-    import __builtin__ as __builtins__
+    import builtins as __builtins__
 except ImportError:
     import builtins as __builtins__
 
@@ -49,7 +49,7 @@ def safe_dir(obj):
 
 def builtins_keys():
     if isinstance(__builtins__, dict):
-        return __builtins__.keys()
+        return list(__builtins__.keys())
     return dir(__builtins__)
 
 def get_builtin(name):
@@ -63,7 +63,7 @@ safe_getattr = PythonScraper.safe_getattr
 BUILTIN_TYPES = [type_name for type_name in builtins_keys() if type(get_builtin(type_name)) is type]
 if sys.version_info[0] >= 3:
     BUILTIN = 'builtins'
-    unicode = str
+    str = str
 else:
     BUILTIN = '__builtin__'
 
@@ -91,11 +91,11 @@ TYPE_OVERRIDES = {
     'filename': PythonScraper.type_to_typeref(str),
     'path': PythonScraper.type_to_typeref(str),
     'byteswritten': PythonScraper.type_to_typeref(int),
-    'unicode': PythonScraper.type_to_typeref(unicode),
-    'Unicode': PythonScraper.type_to_typeref(unicode),
+    'unicode': PythonScraper.type_to_typeref(str),
+    'Unicode': PythonScraper.type_to_typeref(str),
     'True':  PythonScraper.type_to_typeref(bool),
     'False':  PythonScraper.type_to_typeref(bool),
-    'lock': PythonScraper.type_to_typeref(thread.LockType),
+    'lock': PythonScraper.type_to_typeref(_thread.LockType),
     'code': PythonScraper.type_to_typeref(types.CodeType),
     'module': PythonScraper.type_to_typeref(types.ModuleType),
     'size': PythonScraper.type_to_typeref(int),
@@ -106,16 +106,16 @@ TYPE_OVERRIDES = {
     'LIST': PythonScraper.type_to_typeref(list),
     'DICT': PythonScraper.type_to_typeref(dict),
     'char *': PythonScraper.type_to_typeref(str),
-    'wchar_t *': PythonScraper.type_to_typeref(unicode),
+    'wchar_t *': PythonScraper.type_to_typeref(str),
     'CHAR *': PythonScraper.type_to_typeref(str),
     'TCHAR *': PythonScraper.type_to_typeref(str),
-    'WCHAR *': PythonScraper.type_to_typeref(unicode),
+    'WCHAR *': PythonScraper.type_to_typeref(str),
     'LPSTR': PythonScraper.type_to_typeref(str),
     'LPCSTR': PythonScraper.type_to_typeref(str),
     'LPTSTR': PythonScraper.type_to_typeref(str),
     'LPCTSTR': PythonScraper.type_to_typeref(str),
-    'LPWSTR': PythonScraper.type_to_typeref(unicode),
-    'LPCWSTR': PythonScraper.type_to_typeref(unicode),
+    'LPWSTR': PythonScraper.type_to_typeref(str),
+    'LPCWSTR': PythonScraper.type_to_typeref(str),
 }
 
 try:
@@ -461,7 +461,7 @@ def parse_args(tokens, cur_token, module):
 if sys.version > '3.':
     str_types = (str, bytes)
 else:
-    str_types = (str, unicode)
+    str_types = (str, str)
 
 
 def get_overloads_from_doc_string(doc_str, mod, obj_class, func_name, extra_args = []):

@@ -35,7 +35,7 @@ __version__ = "3.0.0.0"
 
 import os, pprint, sys
 try:
-    import cPickle
+    import pickle
 except:
     import _pickle as cPickle
 
@@ -47,16 +47,16 @@ files2 = set(os.listdir(dir2))
 
 for filename in files3:
     if filename.endswith('.idb') and filename in files2:
-        b2 = cPickle.load(file(dir2 + '\\' + filename, 'rb'))
-        b3 = cPickle.load(file(dir1 + '\\' + filename, 'rb'))
+        b2 = pickle.load(file(dir2 + '\\' + filename, 'rb'))
+        b3 = pickle.load(file(dir1 + '\\' + filename, 'rb'))
         
         removed_three = set(b2['members']) - set(b3['members'])
         added_three = set(b3['members']) - set(b2['members'])
         
         if removed_three or added_three:
-            print(filename[:-4])
+            print((filename[:-4]))
             if removed_three:
-                print('Removed in ' + dir1, removed_three)
+                print(('Removed in ' + dir1, removed_three))
             #if added_three:
             #    print('New in ' + dir1, added_three)
 

@@ -20,4 +20,4 @@ for fname in os.listdir('.'):
         del d['filename']
         with open(fname, 'wb') as f:
             pickle.dump(d, f, 1)
-        print('Processed ' + fname)
+        print(('Processed ' + fname))

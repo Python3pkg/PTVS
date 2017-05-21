@@ -14,7 +14,7 @@
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
 
-from __future__ import with_statement, absolute_import
+
 
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.1.0.0"
@@ -26,7 +26,7 @@ import socket
 import sys
 import traceback
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread
 
@@ -192,7 +192,7 @@ class IpcChannel(object):
         # Don't call super because object's __init__ doesn't take arguments
         self.__seq = itertools.count()
         self.__exit = False
-        self.__lock = thread.allocate_lock()
+        self.__lock = _thread.allocate_lock()
         self.__message = []
         self.__exit_on_unknown_command = True
 

@@ -24,7 +24,7 @@ import sys
 from visualstudio_py_repl import BasicReplBackend, ReplBackend, UnsupportedReplException, _command_line_to_args_list
 from visualstudio_py_util import to_bytes
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread    # Renamed as Py3k
 
@@ -86,7 +86,7 @@ except ImportError:
 class DefaultHandler(object):
     def unknown_command(self, content): 
         import pprint
-        print('unknown command ' + str(type(self)))
+        print(('unknown command ' + str(type(self))))
         pprint.pprint(content)
 
     def call_handlers(self, msg):
@@ -248,7 +248,7 @@ class VsStdInChannel(DefaultHandler, StdInChannel):
         
             self.input(value)
             
-        thread.start_new_thread(read_and_respond, ())
+        _thread.start_new_thread(read_and_respond, ())
 
 
 class VsHBChannel(DefaultHandler, HBChannel):
@@ -280,9 +280,9 @@ class IPythonBackend(ReplBackend):
         else:
             self.km.start_kernel(**{'ipython': True, 'extra_arguments': self.get_extra_arguments()})
         self.km.start_channels()
-        self.exit_lock = thread.allocate_lock()
+        self.exit_lock = _thread.allocate_lock()
         self.exit_lock.acquire()     # used as an event
-        self.members_lock = thread.allocate_lock()
+        self.members_lock = _thread.allocate_lock()
         self.members_lock.acquire()
         
         self.km.shell_channel._vs_backend = self
@@ -296,7 +296,7 @@ class IPythonBackend(ReplBackend):
 
     def get_extra_arguments(self):
         if sys.version <= '2.':
-            return [unicode('--pylab=inline')]
+            return [str('--pylab=inline')]
         return ['--pylab=inline']
         
     def execute_file_as_main(self, filename, arg_string):

@@ -92,7 +92,7 @@ def main():
     context = generate_context(context_file, config_dict['default_context'], extra_context=extra_context)
 
     rendered_context = render_context(context, output_folder_path)
-    print(json.dumps(rendered_context))
+    print((json.dumps(rendered_context)))
 
 if __name__ == "__main__":
     sys.exit(int(main() or 0))

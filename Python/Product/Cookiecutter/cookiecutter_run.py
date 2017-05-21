@@ -30,7 +30,7 @@ def main():
     context = json.load(open(context_json_path, 'r'))
 
     logging.basicConfig(
-        format=u'%(levelname)s %(filename)s: %(message)s',
+        format='%(levelname)s %(filename)s: %(message)s',
         level=logging.DEBUG
     )
 

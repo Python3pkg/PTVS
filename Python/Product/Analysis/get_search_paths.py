@@ -41,8 +41,8 @@ AFTER_SITE.discard(None)
 
 for p in sorted(BEFORE_SITE):
     if os.path.isdir(p):
-        print("%s|stdlib|" % p)
+        print(("%s|stdlib|" % p))
 
 for p in sorted(AFTER_SITE - BEFORE_SITE):
     if os.path.isdir(p):
-        print("%s||" % p)
+        print(("%s||" % p))

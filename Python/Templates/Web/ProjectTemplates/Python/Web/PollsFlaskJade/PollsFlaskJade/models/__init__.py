@@ -7,7 +7,7 @@ import json
 
 class Poll(object):
     """A poll object for use in the application views and repository."""
-    def __init__(self, key=u'', text=u''):
+    def __init__(self, key='', text=''):
         """Initializes the poll."""
         self.key = key
         self.text = text
@@ -26,7 +26,7 @@ class Poll(object):
 
 class Choice(object):
     """A poll choice object for use in the application views and repository."""
-    def __init__(self, key=u'', text=u'', votes=0):
+    def __init__(self, key='', text='', votes=0):
         """Initializes the poll choice."""
         self.key = key
         self.text = text

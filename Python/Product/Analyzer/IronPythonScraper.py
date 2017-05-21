@@ -164,7 +164,7 @@ def get_descriptor_type(descriptor):
 
 def get_new_overloads(type_obj, func):
     if func.Targets and func.Targets[0].DeclaringType == clr.GetClrType(InstanceOps):
-        print('has instance ops ' + str(type_obj))
+        print(('has instance ops ' + str(type_obj)))
         clrType = clr.GetClrType(type_obj)
 
         return get_function_overloads(clrType.GetConstructors())

@@ -27,7 +27,7 @@ class _EnumerationType(type(ctypes.c_int)):
 
     def __new__(metacls, name, bases, dict):
         cls = type(ctypes.c_int).__new__(metacls, name, bases, dict)
-        for key, value in cls.__dict__.items():                        
+        for key, value in list(cls.__dict__.items()):                        
             if key.startswith('_') and key.endswith('_'): continue
             
             setattr(cls, key, cls(key, value))
@@ -35,10 +35,8 @@ class _EnumerationType(type(ctypes.c_int)):
         return cls
 
 
-class _Enumeration(ctypes.c_int):
+class _Enumeration(ctypes.c_int, metaclass=_EnumerationType):
     """base class for enumerations"""
-
-    __metaclass__ = _EnumerationType
     def __init__(self, name, value):
         self.name = name        
         ctypes.c_int.__init__(self, value)
@@ -514,7 +512,7 @@ class SkeletonData(ctypes.Structure):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.tracking_state != SkeletonTrackingState.not_tracked
 
 _NuiSkeletonCalculateBoneOrientations = _NUIDLL.NuiSkeletonCalculateBoneOrientations

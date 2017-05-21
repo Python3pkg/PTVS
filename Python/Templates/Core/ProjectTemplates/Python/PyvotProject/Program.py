@@ -24,7 +24,7 @@ def main():
     xl.map(doubled, workbook.get("Values"))
     xl.map(alpha, workbook.get("doubled"))
 
-    print(workbook.range("C3:E7").get())
+    print((workbook.range("C3:E7").get()))
 
 if __name__ == '__main__':
     main()

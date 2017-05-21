@@ -6,11 +6,11 @@ min
 (min)
 min(2,3)
 1 and 2
-`min`
+repr(min)
 [x for x in 'abc']
 [x for x in 'abc' if x == 42]
 42 if min else 100
-{x:y for x,y in {2:3}.items()}
+{x:y for x,y in list({2:3}.items())}
 (x for x in [1,2,3])
 y = [42][0]
 y = min.__name__

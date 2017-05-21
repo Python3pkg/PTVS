@@ -28,7 +28,7 @@ def main():
     context_file = os.path.join(repo_dir, 'cookiecutter.json')
     config_dict = get_user_config(user_config_path)
     context = generate_context(context_file, config_dict['default_context'])
-    print(json.dumps(context))
+    print((json.dumps(context)))
 
 if __name__ == "__main__":
     sys.exit(int(main() or 0))

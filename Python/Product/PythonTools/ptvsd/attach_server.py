@@ -30,7 +30,7 @@ import sys
 import threading
 import traceback
 try:
-    import thread
+    import _thread
 except ImportError:
     import _thread as thread
 try:
@@ -241,7 +241,7 @@ def break_into_debugger():
     and breaks into the debugger with current thread as active.
     """
     if not vspd.DETACHED:
-        vspd.SEND_BREAK_COMPLETE = thread.get_ident()
+        vspd.SEND_BREAK_COMPLETE = _thread.get_ident()
         vspd.mark_all_threads_for_break()
 
 def is_attached():

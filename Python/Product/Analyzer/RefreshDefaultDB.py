@@ -28,7 +28,7 @@ __version__ = "3.0.0.0"
 import os
 import sys
 try:
-    from cPickle import load, dump
+    from pickle import load, dump
 except ImportError:
     from pickle import load, dump
 
@@ -54,7 +54,7 @@ def replace_list_contents(type_name, orig, orig_name):
 
 def replace_dict_contents(type_name, orig, orig_name):
     res = {}
-    for k, v in orig.items():
+    for k, v in list(orig.items()):
         if isinstance(v, tuple):
             res[k] = replace_tuple_contents(type_name, v, orig_name)
         elif isinstance(v, list):
@@ -87,7 +87,7 @@ def main():
     for mod_name in sys.builtin_module_names:
         if mod_name == builtin_name or mod_name == '__main__': continue
         if not os.path.exists(os.path.join(outpath, mod_name + '.idb')):
-            print('Skipping ' + mod_name)
+            print(('Skipping ' + mod_name))
             continue
         
         res = generate_module(lookup_module(mod_name))

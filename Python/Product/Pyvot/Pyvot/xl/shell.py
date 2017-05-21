@@ -34,7 +34,7 @@ def workbook_table_str(workbook_map):
     col_format = "{0:<20}{1:>20}\n"
     s = col_format.format( "Workbook", "Name")
     s += col_format.format("========", "====")
-    for wb_var, wb in workbook_map.iteritems():
+    for wb_var, wb in workbook_map.items():
         s += col_format.format(wb_var, wb.name)
     return s
 
@@ -62,11 +62,11 @@ def make_workbook_map():
     def _names():
         yield "workbook"
         for c in itertools.count(1): yield "workbook_%d" % c
-    return dict(zip( _names(), xl.workbooks() ))
+    return dict(list(zip( _names(), xl.workbooks() )))
 
 def shell_input(*args, **kwargs):
     # 2to3 only notices raw_input used as a function
-    return raw_input(*args, **kwargs)
+    return input(*args, **kwargs)
 
 def run_shell():
     ensure_open_workbook()

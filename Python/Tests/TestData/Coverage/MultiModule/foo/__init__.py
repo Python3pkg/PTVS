@@ -1,2 +1,2 @@
-import blah
+from . import blah
 print('hi')

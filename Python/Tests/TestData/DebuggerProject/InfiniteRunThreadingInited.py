@@ -1,9 +1,9 @@
 try:
-    import thread
+    import _thread
 except ImportError:
     import _thread as thread
 
-thread.start_new_thread(lambda: 42, ())
+_thread.start_new_thread(lambda: 42, ())
 
 x = 1000000
 

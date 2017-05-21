@@ -1,7 +1,7 @@
 try:
     import _thread
 except ImportError:
-    import thread as _thread
+    import _thread as _thread
 l = _thread.allocate_lock()
 l.acquire()
 

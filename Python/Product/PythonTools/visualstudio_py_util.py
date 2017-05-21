@@ -35,9 +35,9 @@ from encodings import utf_8, ascii
 
 # Py3k compat - alias unicode to str, and xrange to range
 try:
-    unicode
+    str
 except:
-    unicode = str
+    str = str
 try:
     xrange
 except:
@@ -176,7 +176,7 @@ def read_string(conn):
 def write_string(conn, s):
     if s is None:
         write_bytes(conn, NONE_PREFIX)
-    elif isinstance(s, unicode):
+    elif isinstance(s, str):
         b = utf_8.encode(s)[0]
         b_len = len(b)
         write_bytes(conn, UNICODE_PREFIX)
@@ -201,7 +201,7 @@ class SafeRepr(object):
         set_info = (set, '{', '}', False)
         frozenset_info = (frozenset, 'frozenset({', '})', False)
     else:
-        string_types = (str, unicode)
+        string_types = (str, str)
         set_info = (set, 'set([', '])', False)
         frozenset_info = (frozenset, 'frozenset([', '])', False)
 
@@ -449,7 +449,7 @@ class SafeRepr(object):
         if sys.version_info >= (3, 0):
             tests.append((self.maxstring_outer + 4, self.maxstring_inner + 4 + 2, bytes('A', 'ascii') * (self.maxstring_outer + 10)))
         else:
-            tests.append((self.maxstring_outer + 4, self.maxstring_inner + 4 + 2, unicode('A') * (self.maxstring_outer + 10)))
+            tests.append((self.maxstring_outer + 4, self.maxstring_inner + 4 + 2, str('A') * (self.maxstring_outer + 10)))
         
         for limit1, limit2, value in tests:
             assert len(self(value)) <= limit1 <= len(repr(value)), (len(self(value)), limit1, len(repr(value)), value)
@@ -458,9 +458,9 @@ class SafeRepr(object):
         def test(source, expected):
             actual = self(source)
             if actual != expected:
-                print("Source " + repr(source))
-                print("Expect " + expected)
-                print("Actual " + actual)
+                print(("Source " + repr(source)))
+                print(("Expect " + expected))
+                print(("Actual " + actual))
                 print("")
                 assert False
         
@@ -468,9 +468,9 @@ class SafeRepr(object):
             import re
             actual = self(source)
             if not re.match(pattern, actual):
-                print("Source  " + repr(source))
-                print("Pattern " + pattern)
-                print("Actual  " + actual)
+                print(("Source  " + repr(source)))
+                print(("Pattern " + pattern))
+                print(("Actual  " + actual))
                 print("")
                 assert False
         
@@ -482,10 +482,10 @@ class SafeRepr(object):
                 else:
                     suffix = _suffix * (i + 1)
                 #print("ctype = " + ctype.__name__ + ", maxcollection[" + str(i) + "] == " + str(self.maxcollection[i]))
-                c1 = ctype(range(self.maxcollection[i] - 1))
+                c1 = ctype(list(range(self.maxcollection[i] - 1)))
                 inner_repr = prefix + ', '.join(str(j) for j in c1)
-                c2 = ctype(range(self.maxcollection[i]))
-                c3 = ctype(range(self.maxcollection[i] + 1))
+                c2 = ctype(list(range(self.maxcollection[i])))
+                c3 = ctype(list(range(self.maxcollection[i] + 1)))
                 for j in range(i):
                     c1, c2, c3 = ctype((c1,)), ctype((c2,)), ctype((c3,))
                 test(c1, inner_repr + suffix)
@@ -575,10 +575,10 @@ class SafeRepr(object):
         test(TestClass(), 'MyRepr')
 
         # Test collections and iterables with long repr
-        test(TestClass(xrange(0, 15)), 'MyRepr')
-        test(TestClass(xrange(0, 16)), '<TestClass, len() = 16>')
-        test(TestClass([TestClass(xrange(0, 10))]), 'MyRepr')
-        test(TestClass([TestClass(xrange(0, 11))]), '<TestClass, len() = 1>')
+        test(TestClass(range(0, 15)), 'MyRepr')
+        test(TestClass(range(0, 16)), '<TestClass, len() = 16>')
+        test(TestClass([TestClass(range(0, 10))]), 'MyRepr')
+        test(TestClass([TestClass(range(0, 11))]), '<TestClass, len() = 1>')
 
         # Test strings inside long iterables
         test(TestClass(['a' * (self.maxcollection[1] + 1)]), 'MyRepr')
@@ -589,7 +589,7 @@ class SafeRepr(object):
             range_name = 'xrange'
         else:
             range_name = 'range'
-        test(xrange(1, self.maxcollection[0] + 1), '%s(1, %s)' % (range_name, self.maxcollection[0] + 1))
+        test(range(1, self.maxcollection[0] + 1), '%s(1, %s)' % (range_name, self.maxcollection[0] + 1))
 
         # Test directly recursive collections
         c1 = [1, 2]

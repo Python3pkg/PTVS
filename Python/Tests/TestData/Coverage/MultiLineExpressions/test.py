@@ -26,7 +26,7 @@ if x == 42]
 else 100
 {x:y for 
 x,y in 
-{2:3}.items()
+list({2:3}.items())
 }
 (x for 
 x in [1,2,3]

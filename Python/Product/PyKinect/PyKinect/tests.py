@@ -77,7 +77,7 @@ class KinectTestCases(unittest.TestCase):
             ImageType.Depth : (ImageResolution.Resolution320x240, ImageResolution.Resolution640x480, ImageResolution.Resolution80x60),
         } 
 
-        for image_type, resolution_list in valid_resolutions.items():
+        for image_type, resolution_list in list(valid_resolutions.items()):
             for resolution in resolution_list:
                 with Runtime() as nui:   
                     nui.video_stream.open(ImageStreamType.Video, 2, resolution, image_type)
@@ -91,7 +91,7 @@ class KinectTestCases(unittest.TestCase):
                 ImageType.Depth : (ImageResolution.Resolution1280x1024, ),
             }
 
-            for image_type, resolution_list in invalid_resolutions.items():
+            for image_type, resolution_list in list(invalid_resolutions.items()):
                 for resolution in resolution_list:
                     self.assertRaises(
                                       KinectError, 
@@ -245,7 +245,7 @@ class KinectTestCases(unittest.TestCase):
 
     def interop_prop_test(self, interop_obj, tests):
         for friendly_name, interop_name, value in tests:
-            print friendly_name
+            print(friendly_name)
             setattr(interop_obj, friendly_name, value)
             
             self.assertCtypesEquals(getattr(interop_obj, friendly_name), value)        

@@ -167,7 +167,7 @@ class _NuiInstance(ctypes.c_voidp):
 
     def InstanceIndex(self):
         """which instance # was it created with, in MSR_NuiCreateInstanceByIndex( )/etc?"""
-        print self.value
+        print(self.value)
         return _NuiInstance._InstanceIndex(self)
 
     def NuiInitialize(self, dwFlags = 0):

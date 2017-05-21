@@ -46,7 +46,7 @@ else:
     try:
         from urllib.request import urlretrieve
     except ImportError:
-        from urllib import urlretrieve
+        from urllib.request import urlretrieve
 
 def install_from_source_file(name, tar_file, temp_dir):
         package = tarfile.open(tar_file)
@@ -61,7 +61,7 @@ def install_from_source_file(name, tar_file, temp_dir):
             raise OSError("Failed to find " + name + "'s setup.py")
         extracted_dir = extracted_dirs[0]
 
-        print('\nInstalling from ' + extracted_dir)
+        print(('\nInstalling from ' + extracted_dir))
         sys.stdout.flush()
         cwd = os.getcwd()
         try:
@@ -77,10 +77,10 @@ def install_from_local_source():
     setuptools_package = os.path.join(cwd, 'setuptools.tar.gz')
     pip_package = os.path.join(cwd, 'pip.tar.gz')
     if not os.path.isfile(setuptools_package):
-        print('Did not find ' + setuptools_package)
+        print(('Did not find ' + setuptools_package))
         raise ValueError('setuptools.tar.gz not found')
     if not os.path.isfile(pip_package):
-        print('Did not find ' + pip_package)
+        print(('Did not find ' + pip_package))
         raise ValueError('pip.tar.gz not found')
     
     setuptools_temp_dir = tempfile.mkdtemp('-setuptools', 'ptvs-')
@@ -104,14 +104,14 @@ def install_from_source(setuptools_source, pip_source):
 
     try:
         os.chdir(setuptools_temp_dir)
-        print('Downloading setuptools from ' + setuptools_source)
+        print(('Downloading setuptools from ' + setuptools_source))
         sys.stdout.flush()
         setuptools_package, _ = urlretrieve(setuptools_source, 'setuptools.tar.gz')
 
         install_from_source_file('setuptools', setuptools_package, setuptools_temp_dir)
 
         os.chdir(pip_temp_dir)
-        print('Downloading pip from ' + pip_source)
+        print(('Downloading pip from ' + pip_source))
         sys.stdout.flush()
         pip_package, _ = urlretrieve(pip_source, 'pip.tar.gz')
 
@@ -128,11 +128,11 @@ def install_from_pip(getpip_url):
     pip_temp_dir = tempfile.mkdtemp('-pip', 'ptvs-')
 
     try:
-        print('Downloading pip from ' + getpip_url)
+        print(('Downloading pip from ' + getpip_url))
         sys.stdout.flush()
         pip_script, _ = urlretrieve(getpip_url, os.path.join(pip_temp_dir, 'get-pip.py'))
 
-        print('\nInstalling from ' + pip_script)
+        print(('\nInstalling from ' + pip_script))
         sys.stdout.flush()
 
         subprocess.check_call(EXECUTABLE + [pip_script])

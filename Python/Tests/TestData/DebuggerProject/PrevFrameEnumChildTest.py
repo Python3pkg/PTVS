@@ -6,11 +6,11 @@ def f():
     d1 = {42: 100}
     d2 = {'abc': 'fob'}
     d3 = {1e1000: d1}
-    u1 = u"привет мир"
+    u1 = "привет мир"
     s = set([frozenset([2,3,4])])
     class C(object):
         abc = 42
-        uc = u"привет мир"
+        uc = "привет мир"
         def f(self): pass
 
     cinst = C()

@@ -15,7 +15,7 @@ class Repository(object):
 
     def get_polls(self):
         """Returns all the polls from the repository."""
-        return self.index.values()
+        return list(self.index.values())
 
     def get_poll(self, poll_key):
         """Returns a poll from the repository."""

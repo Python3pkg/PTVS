@@ -13,7 +13,7 @@ def g():
         print('bye')
     x = 2
     pass
-    print(h())
+    print((h()))
     return x
     
 def func(a, b, c):

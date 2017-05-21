@@ -1,13 +1,13 @@
 import sys
 
 try:
-    unicode
+    str
 except:
-    unicode = str
+    str = str
 
-class DerivedString(unicode):
+class DerivedString(str):
     def __new__(cls, *args, **kwargs):
-        return unicode.__new__(cls, *args, **kwargs)
+        return str.__new__(cls, *args, **kwargs)
 
 n = 123
 
@@ -16,7 +16,7 @@ if sys.version[0] == '3':
     u = 'fob'
 else:
     s = 'fob'
-    u = unicode('fob')
+    u = str('fob')
 
 ds = DerivedString(u)
 

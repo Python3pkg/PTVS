@@ -30,7 +30,7 @@ class cached_property(object):
 def _gen_indices_from_pairs(pairs):
     m = None
     for start, end in pairs:
-        for i in xrange(start, end + 1): 
+        for i in range(start, end + 1): 
             if (m is None) or (i > m): yield i ; m = i
 
 def _count_indices_in_pairs(pairs):
@@ -122,7 +122,7 @@ class CollapsedMatrix(object):
 
     def _allocate_empty_data_array(self):
         # For any r in row_indices, c in column_indices, we should have exactly one storage location for (r, c)
-        self._data = [[None] * self._num_columns for idx in xrange(self._num_rows)]
+        self._data = [[None] * self._num_columns for idx in range(self._num_rows)]
 
     @property
     def collapsed_data(self):
@@ -173,9 +173,9 @@ class CollapsedMatrix(object):
         return [ row[s] for row, s in self._iterslice(row_slice, col_slice) ]
 
     def _set_area(self, row_slice, col_slice, val):
-        from itertools import izip
+        
         row_count = 0
-        for (row, s), row_val in izip(self._iterslice(row_slice, col_slice), val):
+        for (row, s), row_val in zip(self._iterslice(row_slice, col_slice), val):
             row[s] = row_val
             row_count += 1
         if not row_count == len(val):

@@ -99,8 +99,8 @@ class Table(object):
         # This accomplishes nothing if this is an AutoFilter table
         # $$$ update this when slicing is added
         adj_header_range = Range(adjacent._full_xlRange.Rows(1), with_hidden=True)
-        adj_header_range.set( [u" "] * num_new_cols )
-        adj_header_range.set( [u""] * num_new_cols )
+        adj_header_range.set( [" "] * num_new_cols )
+        adj_header_range.set( [""] * num_new_cols )
 
         # adjacent is now a subset of the inserted empty space
         # However, this instance's rData and rHeader attributes are now out of date

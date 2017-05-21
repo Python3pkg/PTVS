@@ -109,4 +109,4 @@ if __name__ == '__main__':
     for file in FILES:
         with open(file.__name__ + '.reg', 'w', encoding='utf-8') as f:
             f.writelines(line + '\n' for line in file())
-        print('Wrote {}.reg'.format(file.__name__))
+        print(('Wrote {}.reg'.format(file.__name__)))

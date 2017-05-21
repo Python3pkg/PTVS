@@ -26,6 +26,7 @@ CacheManager, for non-decorator cache control including invalidation."""
 
 import contextlib
 import functools
+import collections
 
 def enable_caching(f):
     """Decorator which enables caching within the wrapped function. Caching is enabled
@@ -57,7 +58,7 @@ class _ResultCachingDescriptor(object):
     This information is summarized by CacheManager.cache_info(), in which the per-instance stats are aggregated by class"""
 
     def __init__(self, f, as_property=False):
-        assert callable(f) or isinstance(f, property)
+        assert isinstance(f, collections.Callable) or isinstance(f, property)
         self._wrapped = f
         self._wrapping_property = isinstance(f, property)
 
@@ -134,7 +135,7 @@ class CacheSite(object):
     each instance with the caching method uses a separate cache site"""
 
     def __init__(self, source, site_name=None):
-        assert callable(source)
+        assert isinstance(source, collections.Callable)
         if site_name is None: site_name = repr(self)
         
         self.source = source
@@ -275,7 +276,7 @@ class CacheManager_class(object):
         
         For example, though a method on a class has a cache site per _instance_, all instance sites
         of a method are joined to the same site group."""
-        for site_group_key, group_stats in self._site_stats.iteritems():
+        for site_group_key, group_stats in self._site_stats.items():
             yield (site_group_key, len(group_stats), 
                    sum([stat.hits for stat in group_stats]), 
                    sum([stat.misses for stat in group_stats]),

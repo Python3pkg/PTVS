@@ -80,10 +80,10 @@ def map(func, *rangeIn):
     The result list is written back to Excel as a column. A ColumnVector
     representing the stored results is returned"""
 
-    import __builtin__    
+    import builtins    
     xs = (_to_value(r) for r in rangeIn) 
     name = getattr(func, '__name__', "<callable>")
-    y = __builtin__.map(func, *xs)
+    y = builtins.map(func, *xs)
     r = _dest_for_source_ranges(rangeIn)
     return view(y, name, to=r)
 
@@ -94,10 +94,10 @@ def apply(func, *rangeIn):
     are converted to lists of Python values (with Range.get()).
     
     The value returned by `func` is then passed to xl.view"""
-    import __builtin__
+    import builtins
     xs = (_to_value(r) for r in rangeIn)    
     name = getattr(func, '__name__', "<callable>")
-    y = __builtin__.apply(func, xs)
+    y = builtins.apply(func, xs)
     r = _dest_for_source_ranges(rangeIn)
     return view(y, name, to=r)
 

@@ -115,7 +115,7 @@ __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.0.0.0"
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle # Py3k
 import datetime
@@ -200,7 +200,7 @@ def typename_to_typeref(n1, n2=None):
 def type_to_typeref(type):
     type_name = safe_getattr(type, '__name__', None)
     if not type_name:
-        print('Cannot get type name of ' + safe_repr(type))
+        print(('Cannot get type name of ' + safe_repr(type)))
         type = object
         type_name = 'object'
     if safe_hasattr(type, '__module__'):
@@ -356,7 +356,7 @@ def generate_member_table(obj, is_hidden=False, from_type=False, extra_types=Non
             # Otherwise, use a typeref
             return False
 
-        for (dep_mod, dep_name), dep_obj in dependencies.items():
+        for (dep_mod, dep_name), dep_obj in list(dependencies.items()):
             if needs_type_info(dep_mod, dep_name):
                 table[dep_name] = {
                     'kind': 'type',
@@ -415,7 +415,7 @@ def generate_member(obj, is_hidden=False, from_type=False):
 if sys.version > '3.':
     str_types = (str, bytes)
 else:
-    str_types = (str, unicode)
+    str_types = (str, str)
 
 
 def generate_type_new(type_obj, obj):
@@ -549,13 +549,13 @@ def generate_builtin_module():
     extra_types['ellipsis'] = type(Ellipsis)
     extra_types['module_type'] = types.ModuleType
     if sys.version_info[0] == 2:
-        extra_types['dict_keys'] = type({}.iterkeys())
-        extra_types['dict_values'] = type({}.itervalues())
-        extra_types['dict_items'] = type({}.iteritems())
+        extra_types['dict_keys'] = type(iter({}.keys()))
+        extra_types['dict_values'] = type(iter({}.values()))
+        extra_types['dict_items'] = type(iter({}.items()))
     else:
-        extra_types['dict_keys'] = type({}.keys())
-        extra_types['dict_values'] = type({}.values())
-        extra_types['dict_items'] = type({}.items())
+        extra_types['dict_keys'] = type(list({}.keys()))
+        extra_types['dict_values'] = type(list({}.values()))
+        extra_types['dict_items'] = type(list({}.items()))
     
     extra_types['list_iterator'] = type(iter(list()))
     extra_types['tuple_iterator'] = type(iter(tuple()))
@@ -563,13 +563,13 @@ def generate_builtin_module():
     extra_types['str_iterator'] = type(iter(""))
     if sys.version_info[0] == 2:
         extra_types['bytes_iterator'] = type(iter(""))
-        extra_types['unicode_iterator'] = type(iter(unicode()))
+        extra_types['unicode_iterator'] = type(iter(str()))
     else:
         extra_types['bytes_iterator'] = type(iter(bytes()))
         extra_types['unicode_iterator'] = type(iter(""))
     extra_types['callable_iterator'] = type(iter(lambda: None, None))
 
-    res = generate_module(lookup_module(builtin_name), extra_types = extra_types.items())
+    res = generate_module(lookup_module(builtin_name), extra_types = list(extra_types.items()))
 
     if res and 'members' in res and 'object' in res['members']:
         assert res['members']['object']['kind'] == 'type', "Unexpected: " + repr(res['members']['object'])
@@ -618,7 +618,7 @@ _MERGES = {'type' : merge_type,
           'method': merge_method}
 
 def merge_member_table(baseline_table, new_table):
-    for name, member_table in new_table.items():
+    for name, member_table in list(new_table.items()):
         base_member_table = baseline_table.get(name, None)
         kind = member_table['kind']
         

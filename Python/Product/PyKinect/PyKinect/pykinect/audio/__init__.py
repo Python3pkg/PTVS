@@ -207,7 +207,7 @@ class _AudioFile(object):
     def flush(self):
         pass
 
-    def next(self):
+    def __next__(self):
         raise NotImplementedError()
 
     def __iter__(self):

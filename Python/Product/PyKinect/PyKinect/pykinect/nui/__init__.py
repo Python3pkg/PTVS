@@ -16,7 +16,7 @@
 
 import ctypes
 import os
-import thread
+import _thread
 
 # basic initialization, Python specific infrastructure
 _nuidll_path = os.path.join(os.environ['WINDIR'], 'System32', 'Kinect10.dll')
@@ -33,7 +33,7 @@ from pykinect.nui.structs import (ImageDigitalZoom, ImageFrame, ImageResolution,
                                   SkeletonQuality, SkeletonTrackingState, 
                                   TransformSmoothParameters, Vector, _Enumeration)
 
-from _interop import (_CreateEvent, _CloseHandle, _WaitForSingleObject, 
+from ._interop import (_CreateEvent, _CloseHandle, _WaitForSingleObject, 
                       _WaitForMultipleObjects, _WAIT_OBJECT_0, _INFINITE, 
                       _SysFreeString, _NuiInstance, _NuiCreateSensorByIndex, 
                       _NuiGetSensorCount)
@@ -135,7 +135,7 @@ class Runtime(object):
         self.depth_stream = ImageStream(self)
         self.video_stream = ImageStream(self)
         
-        thread.start_new_thread(self._event_thread, ())
+        _thread.start_new_thread(self._event_thread, ())
 
     def close(self):
         """closes the current runtime"""

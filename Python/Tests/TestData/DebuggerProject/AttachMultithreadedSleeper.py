@@ -1,10 +1,10 @@
 import threading, time, nt
 
-print ('main thread', nt.getpid())
+print(('main thread', nt.getpid()))
 
 class MyThread(threading.Thread):
     def run(self):
-        print('running', nt.getpid())
+        print(('running', nt.getpid()))
         time.sleep(10)
         print('done running')
 

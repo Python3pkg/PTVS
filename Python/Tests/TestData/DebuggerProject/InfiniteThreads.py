@@ -7,7 +7,7 @@ except NotImplementedError:
     pass
 
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread
 
@@ -19,7 +19,7 @@ x = 1000000
 try:
     while True:
         try:
-            thread.start_new_thread(f, ())
+            _thread.start_new_thread(f, ())
             import time
             time.sleep(.05)
         except: 
@@ -31,4 +31,4 @@ try:
 
 except:
     traceback.print_exc()
-    input()
+    eval(input())

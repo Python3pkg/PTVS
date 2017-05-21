@@ -14,7 +14,7 @@
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
 
-import thread
+import _thread
 import itertools
 import ctypes
 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     draw_skeleton = True
     video_display = False
 
-    screen_lock = thread.allocate()
+    screen_lock = _thread.allocate()
 
     screen = pygame.display.set_mode(DEPTH_WINSIZE,0,16)    
     pygame.display.set_caption('Python Kinect Demo')

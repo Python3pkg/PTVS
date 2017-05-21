@@ -37,9 +37,9 @@ http://go.microsoft.com/fwlink/?LinkId=293415
 
 Press Enter to close. . .''')
     try:
-        raw_input()
-    except NameError:
         input()
+    except NameError:
+        eval(input())
     sys.exit(1)
 
 # Arguments are:

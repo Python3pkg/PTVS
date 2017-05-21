@@ -46,7 +46,7 @@ except PendingDeprecationWarning: pass
 except ReferenceError: pass
 except RuntimeError: pass
 except RuntimeWarning: pass
-except StandardError: pass
+except Exception: pass
 except StopIteration: pass
 except SyntaxError: pass
 except SyntaxWarning: pass
@@ -67,7 +67,7 @@ except WindowsError: pass
 except ZeroDivisionError: pass
 
 try: pass
-except (ArithmeticError, AssertionError, AttributeError, BaseException, BufferError, BytesWarning, DeprecationWarning, EOFError, EnvironmentError, Exception, FloatingPointError, FutureWarning, GeneratorExit, IOError, ImportError, ImportWarning, IndentationError, IndexError, KeyError, KeyboardInterrupt, LookupError, MemoryError, NameError, NotImplementedError, OSError, OverflowError, PendingDeprecationWarning, ReferenceError, RuntimeError, RuntimeWarning, StandardError, StopIteration, SyntaxError, SyntaxWarning, SystemError, SystemExit, TabError, TypeError, UnboundLocalError, UnicodeDecodeError, UnicodeEncodeError, UnicodeError, UnicodeTranslateError, UnicodeWarning, UserWarning, ValueError, Warning, WindowsError, ZeroDivisionError): pass
+except (ArithmeticError, AssertionError, AttributeError, BaseException, BufferError, BytesWarning, DeprecationWarning, EOFError, EnvironmentError, Exception, FloatingPointError, FutureWarning, GeneratorExit, IOError, ImportError, ImportWarning, IndentationError, IndexError, KeyError, KeyboardInterrupt, LookupError, MemoryError, NameError, NotImplementedError, OSError, OverflowError, PendingDeprecationWarning, ReferenceError, RuntimeError, RuntimeWarning, Exception, StopIteration, SyntaxError, SyntaxWarning, SystemError, SystemExit, TabError, TypeError, UnboundLocalError, UnicodeDecodeError, UnicodeEncodeError, UnicodeError, UnicodeTranslateError, UnicodeWarning, UserWarning, ValueError, Warning, WindowsError, ZeroDivisionError): pass
 
 try: pass
 except ArithmeticError: pass
@@ -100,7 +100,7 @@ except PendingDeprecationWarning: pass
 except ReferenceError: pass
 except RuntimeError: pass
 except RuntimeWarning: pass
-except StandardError: pass
+except Exception: pass
 except StopIteration: pass
 except SyntaxError: pass
 except SyntaxWarning: pass
@@ -160,13 +160,13 @@ try: pass
 except Exception as ex: pass
 
 try: pass
-except Exception, ex: pass
+except Exception as ex: pass
 
 try: pass
 except (ValueError, TypeError) as ex: pass
 
 try: pass
-except (ValueError, TypeError), ex: pass
+except (ValueError, TypeError) as ex: pass
 
 try: pass
 except not_included(): pass

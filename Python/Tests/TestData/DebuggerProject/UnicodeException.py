@@ -1,5 +1,5 @@
 try:
 	print('raising')
-	raise Exception(u'hello world')
+	raise Exception('hello world')
 except:
 	print('caught')

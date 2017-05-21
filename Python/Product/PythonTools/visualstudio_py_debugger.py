@@ -14,7 +14,7 @@
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
 
-from __future__ import with_statement
+
 
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.1.0.0"
@@ -28,7 +28,7 @@ _threading = None
 import sys
 import ctypes
 try:
-    import thread
+    import _thread
 except ImportError:
     import _thread as thread
 import socket
@@ -114,14 +114,14 @@ def thread_creator(func, args, kwargs = {}, *extra_args):
 
     return _start_new_thread(new_thread_wrapper, (func, args, kwargs))
 
-_thread_start_new_thread = thread.start_new_thread
+_thread_start_new_thread = _thread.start_new_thread
 def _start_new_thread(func, args, kwargs = {}):
-    t_lock = thread.allocate_lock()
+    t_lock = _thread.allocate_lock()
     t_lock.acquire()
     
     tid = []
     def thread_starter(a, kw):
-        tid.append(thread.get_ident())
+        tid.append(_thread.get_ident())
         t_lock.release()
         return func(*a, **kw)
     
@@ -130,7 +130,7 @@ def _start_new_thread(func, args, kwargs = {}):
         return tid[0]
 
 THREADS = {}
-THREADS_LOCK = thread.allocate_lock()
+THREADS_LOCK = _thread.allocate_lock()
 MODULES = []
 
 BREAK_ON_SYSTEMEXIT_ZERO = False
@@ -139,9 +139,9 @@ DJANGO_DEBUG = False
 
 # Py3k compat - alias unicode to str
 try:
-    unicode
+    str
 except:
-    unicode = str
+    str = str
 
 # A value of a synthesized child. The string is passed through to the variable list, and type is not displayed at all.
 class SynthesizedValue(object):
@@ -221,14 +221,14 @@ class BreakpointInfo(object):
 
     @staticmethod
     def find_by_id(breakpoint_id):
-        for line, bp_dict in BREAKPOINTS.items():
-            for (filename, bp_id), bp in bp_dict.items():
+        for line, bp_dict in list(BREAKPOINTS.items()):
+            for (filename, bp_id), bp in list(bp_dict.items()):
                 if bp_id == breakpoint_id:
                     return bp
         return None
 
 # lock for calling .send on the socket
-send_lock = thread.allocate_lock()
+send_lock = _thread.allocate_lock()
 
 class _SendLockContextManager(object):
     """context manager for send lock.  Handles both acquiring/releasing the 
@@ -238,7 +238,7 @@ class _SendLockContextManager(object):
     def __enter__(self):
         # mark that we're about to do socket I/O so we won't deliver
         # debug events when we're debugging the standard library
-        cur_thread = get_thread_from_id(thread.get_ident())
+        cur_thread = get_thread_from_id(_thread.get_ident())
         if cur_thread is not None:
             cur_thread.is_sending = True
 
@@ -248,7 +248,7 @@ class _SendLockContextManager(object):
         send_lock.release()
         
         # start sending debug events again
-        cur_thread = get_thread_from_id(thread.get_ident())
+        cur_thread = get_thread_from_id(_thread.get_ident())
         if cur_thread is not None:
             cur_thread.is_sending = False
 
@@ -298,11 +298,11 @@ METHOD_TYPES = (
 
 # repr() for these types can be used as input for eval() to get the original value.
 # float is intentionally not included because it is not always round-trippable (e.g inf, nan).
-TYPES_WITH_ROUND_TRIPPING_REPR = set((type(None), int, bool, str, unicode))
+TYPES_WITH_ROUND_TRIPPING_REPR = set((type(None), int, bool, str, str))
 if sys.version[0] == '3':
     TYPES_WITH_ROUND_TRIPPING_REPR.add(bytes)
 else:
-    TYPES_WITH_ROUND_TRIPPING_REPR.add(long)
+    TYPES_WITH_ROUND_TRIPPING_REPR.add(int)
 
 # repr() for these types can be used as input for eval() to get the original value, provided that the same is true for all their elements.
 COLLECTION_TYPES_WITH_ROUND_TRIPPING_REPR = set((tuple, list, set, frozenset))
@@ -325,7 +325,7 @@ def eval_repr(x):
 
 # key is type, value is function producing the raw repr
 TYPES_WITH_RAW_REPR = {
-    unicode: (lambda s: s)
+    str: (lambda s: s)
 }
 
 # bytearray is 2.6+
@@ -339,7 +339,7 @@ except:
 if sys.version[0] == '3':
     TYPES_WITH_RAW_REPR[bytes] = TYPES_WITH_RAW_REPR[bytearray]
 else:
-    TYPES_WITH_RAW_REPR[str] = TYPES_WITH_RAW_REPR[unicode]
+    TYPES_WITH_RAW_REPR[str] = TYPES_WITH_RAW_REPR[str]
 
 if sys.version[0] == '3':
   # work around a crashing bug on CPython 3.x where they take a hard stack overflow
@@ -428,7 +428,7 @@ class ExceptionBreakInfo(object):
         self.default_mode = BREAK_MODE_UNHANDLED
         self.break_on = { }
         self.handler_cache = dict(self.BUILT_IN_HANDLERS)
-        self.handler_lock = thread.allocate_lock()
+        self.handler_lock = _thread.allocate_lock()
         self.add_exception('exceptions.IndexError', BREAK_MODE_NEVER)
         self.add_exception('builtins.IndexError', BREAK_MODE_NEVER)
         self.add_exception('exceptions.KeyError', BREAK_MODE_NEVER)
@@ -566,7 +566,7 @@ def should_debug_code(code):
 
     return True
 
-attach_lock = thread.allocate_lock()
+attach_lock = _thread.allocate_lock()
 attach_sent_break = False
 
 local_path_to_vs_path = {}
@@ -676,7 +676,7 @@ class DjangoBreakpointInfo(object):
         low_line, hi_line = self.get_line_range(start, end)
         if low_line is not None and hi_line is not None:
             # low_line/hi_line is 0 based, self.breakpoints is 1 based
-            for i in xrange(low_line+1, hi_line+2): 
+            for i in range(low_line+1, hi_line+2): 
                 bkpt_id = self.breakpoints.get(i)
                 if bkpt_id  is not None:
                     return True, bkpt_id 
@@ -722,7 +722,7 @@ class Thread(object):
         if id is not None:
             self.id = id 
         else:
-            self.id = thread.get_ident()
+            self.id = _thread.get_ident()
         self._events = {'call' : self.handle_call, 
                         'line' : self.handle_line, 
                         'return' : self.handle_return, 
@@ -734,9 +734,9 @@ class Thread(object):
         self.cur_frame = None
         self.stepping = STEPPING_NONE
         self.unblock_work = None
-        self._block_lock = thread.allocate_lock()
+        self._block_lock = _thread.allocate_lock()
         self._block_lock.acquire()
-        self._block_starting_lock = thread.allocate_lock()
+        self._block_starting_lock = _thread.allocate_lock()
         self._is_blocked = False
         self._is_working = False
         self.stopped_on_line = None
@@ -1008,7 +1008,7 @@ class Thread(object):
             if BREAKPOINTS and handle_breakpoints:
                 bp = BREAKPOINTS.get(frame.f_lineno)
                 if bp is not None:
-                    for (filename, bp_id), bp in bp.items():
+                    for (filename, bp_id), bp in list(bp.items()):
                         if filename != frame.f_code.co_filename:
                             # When the breakpoint is bound, the filename is updated to match co_filename of
                             # the module to which it was bound, so only exact matches are considered hits.
@@ -1234,7 +1234,7 @@ class Thread(object):
     def unblock(self):
         """unblocks the current thread allowing it to continue to run"""
         assert self._is_blocked 
-        assert self.id != thread.get_ident()    # only someone else should unblock us
+        assert self.id != _thread.get_ident()    # only someone else should unblock us
         
         self._block_lock.release()
 
@@ -1283,7 +1283,7 @@ class Thread(object):
                 # hasattr check to defend against someone passing a bad dictionary value
                 # and us breaking the app.
                 if hasattr(d, 'keys') and d != DJANGO_BUILTINS:
-                    for key in d.keys():
+                    for key in list(d.keys()):
                         locs[key] = d[key]
         else:
             locs = cur_frame.f_locals
@@ -1362,11 +1362,11 @@ class Thread(object):
                 elif isinstance(res, dict) or (hasattr(res, 'items') and hasattr(res, 'has_key')):
                     # Dictionary-like object.
                     try:
-                        enum = res.viewitems()
+                        enum = res.items()
                         enum_expr = expr + '.viewitems()'
                         children.append(('viewitems()', enum_expr, SynthesizedValue(), PYTHON_EVALUATION_RESULT_METHOD_CALL))
                     except:
-                        enum = res.items()
+                        enum = list(res.items())
                         enum_expr = expr + '.items()'
                         children.append(('items()', enum_expr, SynthesizedValue(), PYTHON_EVALUATION_RESULT_METHOD_CALL))
                     enum_var = '(k, v)'
@@ -1611,10 +1611,10 @@ def try_bind_break_point(mod_filename, module, bp):
 def mark_all_threads_for_break(stepping = STEPPING_BREAK, skip_thread = None):
     THREADS_LOCK.acquire()
     try:
-        for thread in THREADS.values():
+        for thread in list(THREADS.values()):
             if thread is skip_thread:
                 continue
-            thread.stepping = stepping
+            _thread.stepping = stepping
     finally:
         THREADS_LOCK.release()
 
@@ -1651,8 +1651,8 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            assert thread._is_blocked
-            thread.stepping = STEPPING_INTO
+            assert _thread._is_blocked
+            _thread.stepping = STEPPING_INTO
             self._resume_all()
 
     def on_legacyStepOut(self, request, args):
@@ -1661,8 +1661,8 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            assert thread._is_blocked
-            thread.stepping = STEPPING_OUT
+            assert _thread._is_blocked
+            _thread.stepping = STEPPING_OUT
             self._resume_all()
 
     def on_legacyStepOver(self, request, args):
@@ -1672,15 +1672,15 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            assert thread._is_blocked
+            assert _thread._is_blocked
             if DJANGO_DEBUG:
-                source_obj = get_django_frame_source(thread.cur_frame)
+                source_obj = get_django_frame_source(_thread.cur_frame)
                 if source_obj is not None:
-                    thread.django_stepping = True
+                    _thread.django_stepping = True
                     self._resume_all()
                     return
 
-            thread.stepping = STEPPING_OVER
+            _thread.stepping = STEPPING_OVER
             self._resume_all()
 
     def on_legacySetBreakpoint(self, request, args):
@@ -1829,7 +1829,7 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            thread.enum_thread_frames_locally()
+            _thread.enum_thread_frames_locally()
 
     def on_legacyResumeAll(self, request, args):
         self.send_debug_response(request)
@@ -1844,12 +1844,12 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
             THREADS_LOCK.release()
 
         for thread in all_threads:
-            thread._block_starting_lock.acquire()
-            if thread.stepping == STEPPING_BREAK or thread.stepping == STEPPING_ATTACH_BREAK:
-                thread.stepping = STEPPING_NONE
-            if thread._is_blocked:
-                thread.unblock()
-            thread._block_starting_lock.release()
+            _thread._block_starting_lock.acquire()
+            if _thread.stepping == STEPPING_BREAK or _thread.stepping == STEPPING_ATTACH_BREAK:
+                _thread.stepping = STEPPING_NONE
+            if _thread._is_blocked:
+                _thread.unblock()
+            _thread._block_starting_lock.release()
 
     def on_legacyResumeThread(self, request, args):
         thread = get_thread_from_id(args['threadId'])
@@ -1857,11 +1857,11 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            if thread.reported_process_loaded:
-                thread.reported_process_loaded = False
+            if _thread.reported_process_loaded:
+                _thread.reported_process_loaded = False
                 self._resume_all()
             else:
-                thread.unblock()
+                _thread.unblock()
 
     def on_legacyAutoResumeThread(self, request, args):
         thread = get_thread_from_id(args['threadId'])
@@ -1869,8 +1869,8 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            stepping = thread.stepping
-            if ((stepping == STEPPING_OVER or stepping == STEPPING_INTO) and thread.cur_frame.f_lineno != thread.stopped_on_line): 
+            stepping = _thread.stepping
+            if ((stepping == STEPPING_OVER or stepping == STEPPING_INTO) and _thread.cur_frame.f_lineno != _thread.stopped_on_line): 
                 report_step_finished(tid)
             else:
                 self._resume_all()
@@ -1914,7 +1914,7 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
         self.send_debug_response(request)
 
         if thread is not None:
-            thread.stepping = STEPPING_NONE
+            _thread.stepping = STEPPING_NONE
 
     def on_legacySetLineNumber(self, request, args):
         tid = args['threadId']
@@ -1959,13 +1959,13 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
 
         thread, cur_frame = self.get_thread_and_frame(tid, fid, frame_kind)
         if thread is not None and cur_frame is not None:
-            thread.run_on_thread(text, cur_frame, eid, frame_kind, repr_kind)
+            _thread.run_on_thread(text, cur_frame, eid, frame_kind, repr_kind)
 
     def execute_code_no_report(self, text, tid, fid, frame_kind):
         # execute given text in specified frame, without sending back the results
         thread, cur_frame = self.get_thread_and_frame(tid, fid, frame_kind)
         if thread is not None and cur_frame is not None:
-            thread.run_locally_no_report(text, cur_frame, frame_kind)
+            _thread.run_locally_no_report(text, cur_frame, frame_kind)
 
     def on_legacyEnumChildren(self, request, args):
         # execute given text in specified frame
@@ -1979,15 +1979,15 @@ class DebuggerLoop(_vsipc.SocketIO, _vsipc.IpcChannel):
 
         thread, cur_frame = self.get_thread_and_frame(tid, fid, frame_kind)
         if thread is not None and cur_frame is not None:
-            thread.enum_child_on_thread(text, cur_frame, eid, frame_kind)
+            _thread.enum_child_on_thread(text, cur_frame, eid, frame_kind)
 
     def get_thread_and_frame(self, tid, fid, frame_kind):
         thread = get_thread_from_id(tid)
         cur_frame = None
 
         if thread is not None:
-            cur_frame = thread.cur_frame
-            for i in xrange(fid):
+            cur_frame = _thread.cur_frame
+            for i in range(fid):
                 cur_frame = cur_frame.f_back
 
         return thread, cur_frame
@@ -2103,7 +2103,7 @@ def report_exception(frame, exc_info, tid, break_type):
     send_debug_event(
         name='legacyException',
         threadId=tid,
-        data=dict((k, str(v)) for k, v in data.items()),
+        data=dict((k, str(v)) for k, v in list(data.items())),
     )
 
 def new_module(frame):
@@ -2186,7 +2186,7 @@ def report_execution_result(execution_id, result, repr_kind = PYTHON_EVALUATION_
     else:
         flags = PYTHON_EVALUATION_RESULT_RAW
         hex_repr = None                
-        for cls, raw_repr in TYPES_WITH_RAW_REPR.items():
+        for cls, raw_repr in list(TYPES_WITH_RAW_REPR.items()):
             if isinstance(result, cls):
                 try:
                     obj_repr = raw_repr(result)
@@ -2221,9 +2221,9 @@ def report_children(execution_id, children):
 def get_code_filename(code):
     return path.abspath(code.co_filename)
 
-NONEXPANDABLE_TYPES = [int, str, bool, float, object, type(None), unicode]
+NONEXPANDABLE_TYPES = [int, str, bool, float, object, type(None), str]
 try:
-    NONEXPANDABLE_TYPES.append(long)
+    NONEXPANDABLE_TYPES.append(int)
 except NameError: pass
 
 def create_object(obj_type, obj_repr, hex_repr, type_name, obj_len, flags = 0):
@@ -2251,8 +2251,8 @@ debugger_thread_id = -1
 _INTERCEPTING_FOR_ATTACH = False
 
 def intercept_threads(for_attach = False):
-    thread.start_new_thread = thread_creator
-    thread.start_new = thread_creator
+    _thread.start_new_thread = thread_creator
+    _thread.start_new = thread_creator
 
     # If threading has already been imported (i.e. we're attaching), we must hot-patch threading._start_new_thread
     # so that new threads started using it will be intercepted by our code.
@@ -2276,7 +2276,7 @@ def start_debugger_loop(sock):
     debugger_thread_id = _start_new_thread(DebuggerLoop(sock).loop, ())
 
 def attach_process(port_num, debug_id, debug_options, report = False, block = False):
-    for i in xrange(50):
+    for i in range(50):
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.connect(('127.0.0.1', port_num))
@@ -2331,7 +2331,7 @@ def attach_connected_process(debug_options, report = False, block = False):
 
     attach_sent_break = False
 
-    for mod_name, mod_value in sys.modules.items():
+    for mod_name, mod_value in list(sys.modules.items()):
         try:
             filename = getattr(mod_value, '__file__', None)
             if filename is not None:
@@ -2349,7 +2349,7 @@ def attach_connected_process(debug_options, report = False, block = False):
         try:
             all_threads = list(THREADS.values())
             if block:
-                main_thread = THREADS[thread.get_ident()]
+                main_thread = THREADS[_thread.get_ident()]
         finally:
             THREADS_LOCK.release()
 
@@ -2360,7 +2360,7 @@ def attach_connected_process(debug_options, report = False, block = False):
     DETACHED = False
 
     if block:
-        main_thread.block(lambda: report_process_loaded(thread.get_ident()))
+        main_thread.block(lambda: report_process_loaded(_thread.get_ident()))
 
     # intercept all new thread requests
     if not _INTERCEPTING_FOR_ATTACH:
@@ -2390,8 +2390,8 @@ def detach_process():
             sys.stderr = sys.stderr.old_out
 
     if not _INTERCEPTING_FOR_ATTACH:
-        thread.start_new_thread = _start_new_thread
-        thread.start_new = _start_new_thread
+        _thread.start_new_thread = _start_new_thread
+        _thread.start_new = _start_new_thread
 
 def detach_threads():
     # tell all threads to stop tracing...
@@ -2441,12 +2441,12 @@ def new_external_thread():
     thread = new_thread()
     if not attach_sent_break:
         # we are still doing the attach, make this thread break.
-        thread.stepping = STEPPING_ATTACH_BREAK
+        _thread.stepping = STEPPING_ATTACH_BREAK
     elif SEND_BREAK_COMPLETE:
         # user requested break all, make this thread break
-        thread.stepping = STEPPING_BREAK
+        _thread.stepping = STEPPING_BREAK
 
-    sys.settrace(thread.trace_func)
+    sys.settrace(_thread.trace_func)
 
 def do_wait():
     try:
@@ -2494,7 +2494,7 @@ class _DebuggerOutput(object):
             probe_stack(3)
             send_debug_event(
                 name='legacyDebuggerOutput',
-                threadId=thread.get_ident(),
+                threadId=_thread.get_ident(),
                 output=value,
             )
         if self.old_out:
@@ -2503,7 +2503,7 @@ class _DebuggerOutput(object):
     def isatty(self):
         return True
 
-    def next(self):
+    def __next__(self):
         pass
     
     @property
@@ -2526,7 +2526,7 @@ class DebuggerBuffer(object):
             str_data = utf_8.decode(data)[0]
             send_debug_event(
                 name='legacyDebuggerOutput',
-                threadId=thread.get_ident(),
+                threadId=_thread.get_ident(),
                 output=str_data,
             )
         self.buffer.write(data)

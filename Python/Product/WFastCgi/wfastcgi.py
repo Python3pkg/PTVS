@@ -13,7 +13,7 @@
 # 
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
-from __future__ import absolute_import, print_function, with_statement
+
 
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.0.0"
@@ -28,12 +28,12 @@ import traceback
 from xml.dom import minidom
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
     BytesIO = StringIO
 except ImportError:
     from io import StringIO, BytesIO
 try:
-    from thread import start_new_thread
+    from _thread import start_new_thread
 except ImportError:
     from _thread import start_new_thread
 
@@ -235,7 +235,7 @@ def get_encoded_int(i):
 def write_fastcgi_keyvalue_pairs(pairs):
     """Creates a FastCGI key/value stream and returns it as a byte string"""
     parts = []
-    for raw_key, raw_value in pairs.items():
+    for raw_key, raw_value in list(pairs.items()):
         key = wsgi_encode(raw_key)
         value = wsgi_encode(raw_value)
         
@@ -618,7 +618,7 @@ def read_wsgi_handler(physical_path):
     global APPINSIGHT_CLIENT
     env = get_environment(physical_path)
     os.environ.update(env)
-    for path in (v for k, v in env.items() if k.lower() == 'pythonpath'):
+    for path in (v for k, v in list(env.items()) if k.lower() == 'pythonpath'):
         # Expand environment variables manually.
         expanded_path = re.sub(
             '%(\\w+?)%',

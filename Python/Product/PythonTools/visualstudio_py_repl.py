@@ -14,7 +14,7 @@
 # See the Apache Version 2.0 License for specific language governing
 # permissions and limitations under the License.
 
-from __future__ import with_statement
+
 
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.1.0.0"
@@ -25,7 +25,7 @@ __version__ = "3.1.0.0"
 # main thread. This will cause issues when the thread goes away after attach completes.
 
 try:
-    import thread
+    import _thread
 except ImportError:
     # Renamed in Python3k
     import _thread as thread
@@ -65,9 +65,9 @@ write_int = _vspu.write_int
 write_string = _vspu.write_string
 
 try:
-    unicode
+    str
 except NameError:
-    unicode = str
+    str = str
 
 try:
     BaseException
@@ -88,7 +88,7 @@ def _debug_write(out):
 class SafeSendLock(object):
     """a lock which ensures we're released if we take a KeyboardInterrupt exception acquiring it"""
     def __init__(self):
-        self.lock = thread.allocate_lock()
+        self.lock = _thread.allocate_lock()
 
     def __enter__(self):
         self.acquire()
@@ -146,7 +146,7 @@ class UnsupportedReplException(Exception):
         self.reason = reason
 
 # save the start_new_thread so we won't debug/break into the REPL comm thread.
-start_new_thread = thread.start_new_thread
+start_new_thread = _thread.start_new_thread
 class ReplBackend(object):
     """back end for executing REPL code.  This base class handles all of the 
 communication with the remote process while derived classes implement the 
@@ -374,7 +374,7 @@ actual inspection and introspection."""
 
     def _write_member_dict(self, mem_dict):
         write_int(self.conn, len(mem_dict))
-        for name, type_name in mem_dict.items():
+        for name, type_name in list(mem_dict.items()):
             write_string(self.conn, name)
             write_string(self.conn, type_name)
 
@@ -600,7 +600,7 @@ class BasicReplBackend(ReplBackend):
         else:
             self.code_flags = 0
             real_file = filename
-            if isinstance(filename, unicode) and unicode is not str:
+            if isinstance(filename, str) and str is not str:
                 # http://pytools.codeplex.com/workitem/696
                 # We need to encode the unicode filename here, Python 2.x will throw trying
                 # to convert it to ASCII instead of the filesystem encoding.
@@ -791,7 +791,7 @@ due to the exec, so we do it here"""
             )
 
             for line in proc.stdout:
-                print(out_codec.decode(line, 'replace')[0].rstrip('\r\n'))
+                print((out_codec.decode(line, 'replace')[0].rstrip('\r\n')))
         except Exception:
             traceback.print_exc()
 
@@ -830,7 +830,7 @@ due to the exec, so we do it here"""
                 # IronPython doesn't get thread.interrupt_main until 2.7.1
                 self.main_thread.Abort(ReplAbortException())
             else:
-                thread.interrupt_main()
+                _thread.interrupt_main()
 
     def exit_process(self):
         self.execute_item = exit_work_item
@@ -851,7 +851,7 @@ due to the exec, so we do it here"""
             else:
                 items = self.exec_mod.__dict__
 
-            for key, value in items.items():
+            for key, value in list(items.items()):
                 all_members[key] = self.get_type_name(value)
             return '', all_members, {}
         else:
@@ -948,7 +948,7 @@ due to the exec, so we do it here"""
 
         remove_self = type_obj is not None or (type(val) is types.MethodType and 
                         ((sys.version_info >= (3,) and val.__self__ is not None) or
-                        (sys.version_info < (3,) and val.im_self is not None)))
+                        (sys.version_info < (3,) and val.__self__ is not None)))
 
         if remove_self:
             # remove self for instance methods and types
@@ -973,7 +973,7 @@ due to the exec, so we do it here"""
 
     def get_module_names(self):
         res = []
-        for name, module in sys.modules.items():
+        for name, module in list(sys.modules.items()):
             try:
                 if name != 'visualstudio_py_repl' and name != '$visualstudio_py_debugger':
                     if sys.platform == 'cli' and type(module) is NamespaceType:
@@ -1127,15 +1127,15 @@ class DebugReplBackend(BasicReplBackend):
             if sys.platform == 'cli':
                 code = python_context.CreateSnippet('vars()', None, SourceCodeKind.AutoDetect)
                 globals = code.Execute(Scope(cur_frame.f_globals))
-                locals = code.Execute(Scope(thread.get_locals(cur_frame, frame_kind)))
+                locals = code.Execute(Scope(_thread.get_locals(cur_frame, frame_kind)))
             else:
                 globals = cur_frame.f_globals
-                locals = thread.get_locals(cur_frame, frame_kind)
+                locals = _thread.get_locals(cur_frame, frame_kind)
 
-            for key, value in globals.items():
+            for key, value in list(globals.items()):
                 all_members[key] = self.get_type_name(value)
 
-            for key, value in locals.items():
+            for key, value in list(locals.items()):
                 all_members[key] = self.get_type_name(value)
 
             return '', all_members, {}
@@ -1152,7 +1152,7 @@ class DebugReplBackend(BasicReplBackend):
                 code = python_context.CreateSnippet('lambda value, name: getattr(value, name)', None, SourceCodeKind.AutoDetect)
                 getattr_func = code.Execute(scope)
             else:
-                val = eval(expression, cur_frame.f_globals, thread.get_locals(cur_frame, frame_kind))
+                val = eval(expression, cur_frame.f_globals, _thread.get_locals(cur_frame, frame_kind))
                 members = dir(val)
 
         return self.collect_members(val, members, getattr_func)
@@ -1162,7 +1162,7 @@ class DebugReplBackend(BasicReplBackend):
             code = python_context.CreateSnippet(expression, None, SourceCodeKind.AutoDetect)
             val = code.Execute(Scope(cur_frame.f_globals))
         else:
-            val = eval(expression, cur_frame.f_globals, thread.get_locals(cur_frame, frame_kind))
+            val = eval(expression, cur_frame.f_globals, _thread.get_locals(cur_frame, frame_kind))
 
         return self.collect_signatures(val)
 
@@ -1198,7 +1198,7 @@ class _ReplOutput(object):
     def fileno(self):
         if self.pipe is None:
             self.pipe = os.pipe()
-            thread.start_new_thread(self.pipe_thread, (), {})
+            _thread.start_new_thread(self.pipe_thread, (), {})
 
         return self.pipe[1]
 
@@ -1231,7 +1231,7 @@ class _ReplOutput(object):
     def isatty(self):
         return True
 
-    def next(self):
+    def __next__(self):
         pass
 
 
@@ -1268,7 +1268,7 @@ class _ReplInput(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         return self.readline()
 
 
@@ -1387,5 +1387,5 @@ if __name__ == '__main__':
         if DEBUG:
             _debug_write(traceback.format_exc())
             _debug_write('exiting')
-            input()
+            eval(input())
         raise

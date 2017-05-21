@@ -481,7 +481,7 @@ class Vector(Range):
         sets the first 3 values of column A"""
         # caching is enabled to allow _set_2d to re-use the result of determining vector dimension
         # (which constructs an empty collapsed matrix)
-        if isinstance(data, basestring):
+        if isinstance(data, str):
             raise ValueError("Vector-shaped Range requires a list of values (was given a string)")
 
         is_row_vector = (self.num_rows == 1)
@@ -517,7 +517,7 @@ class Scalar(Range):
         """Updates this scalar range's cell. The `data` parameter
         may be a single value, or a (non-string) iterable that returns one item."""   
         # Strings are iterable, but we want to keep them in one piece as a special case
-        if not isinstance(data, basestring):
+        if not isinstance(data, str):
             # Non-string iterables are okay as long as they have one element.
             # Non-iterables (list fails) are always okay
             try:
@@ -601,7 +601,7 @@ def _xlRange_from_corners(xlWorksheet, r1, c1, r2, c2):
 
 def _xlRange_parse(xlWorksheet, obj):
     """Get range on the worksheet by the given string 'A1', 'A1:D4'"""
-    assert isinstance(obj, basestring), "Expected a range string"
+    assert isinstance(obj, str), "Expected a range string"
     try:
         return xlWorksheet.Range(obj)
     except com_utils.com_error as e:

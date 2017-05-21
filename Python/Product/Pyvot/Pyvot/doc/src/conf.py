@@ -45,8 +45,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Pyvot'
-copyright = u'2011, Microsoft Corporation'
+project = 'Pyvot'
+copyright = '2011, Microsoft Corporation'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -183,8 +183,8 @@ htmlhelp_basename = 'Pyvotdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Pyvot.tex', u'Pyvot Documentation',
-   u'Microsoft Corporation', 'manual'),
+  ('index', 'Pyvot.tex', 'Pyvot Documentation',
+   'Microsoft Corporation', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

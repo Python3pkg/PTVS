@@ -53,7 +53,7 @@ def wait_for_excel_exit():
     import gc
     global _time_waiting_for_excel_exit
     wait_start = datetime.datetime.now()
-    for i in xrange(5):
+    for i in range(5):
         try:
             # We are interested only in failure, not the return value
             # The return value - if captured in the future - must not
@@ -147,9 +147,9 @@ def timed(f):
 def _print_timed_test_results():
     cols = "{0:<30}{1:>30}"
     headers = ("Timed test", "Elapsed time (s)")
-    print cols.format(*headers)
-    print cols.format(*["-" * len(h) for h in headers])
-    for fname, time in _timed_test_results.iteritems():  print cols.format(fname, time)
+    print(cols.format(*headers))
+    print(cols.format(*["-" * len(h) for h in headers]))
+    for fname, time in _timed_test_results.items():  print(cols.format(fname, time))
 
 def _print_cache_info():
     cache_info = xl.CacheManager.cache_info()
@@ -158,13 +158,13 @@ def _print_cache_info():
 
     cols = "{0:<80}{1:>10}{2:>10}{3:>10}{4:>30}"
     headers = ("Cache Site Group", "Group Size", "Hits", "Misses", "Misses (caching disabled)")
-    print cols.format(*headers)
-    print cols.format(*["-" * len(h) for h in headers])
+    print(cols.format(*headers))
+    print(cols.format(*["-" * len(h) for h in headers]))
 
-    for site_group, group_size, hits, misses, uncached_misses in cache_info:  print cols.format(site_group, group_size, hits, misses, uncached_misses) 
+    for site_group, group_size, hits, misses, uncached_misses in cache_info:  print(cols.format(site_group, group_size, hits, misses, uncached_misses)) 
 
 def _print_time_running_excel_tests():
-    print "Time running Excel-based tests (excl. startup / shutdown time):\t", ExcelWorkbookTestCase.total_time_running_excel_tests.total_seconds()
+    print("Time running Excel-based tests (excl. startup / shutdown time):\t", ExcelWorkbookTestCase.total_time_running_excel_tests.total_seconds())
 
 class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
     # Contains Test Tables + Pivots
@@ -172,7 +172,7 @@ class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
 
     def test_get_named_range(self):
         """Test getting a named excel range. Cell references are relative to ActiveSheet, but named ranges are anywhere in workbook"""
-        self.assertEqual(self.workbook.get("MyNamedRanged").get(), [u'a', u'b', u'c'])
+        self.assertEqual(self.workbook.get("MyNamedRanged").get(), ['a', 'b', 'c'])
 
     # (Filter vs Table vs NoFilter) x (range name vs. Column name) x (visible vs. visibility)
 
@@ -203,7 +203,7 @@ class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
         self.assertTrue(self.workbook.range("B:B").num_rows > 10 ** 6)
         # ...but we should get 4 points (header + 3 points above), rather than to the row limit,
         # and extra Nones to row 10 (bounds of UsedRange; didn't snap to table contents)
-        self.assertEqual(self.workbook.range("B:B").get(), [u'Beta', 5, 6, 8] + [None] * 5)
+        self.assertEqual(self.workbook.range("B:B").get(), ['Beta', 5, 6, 8] + [None] * 5)
 
     @use_worksheet("AutoFilter")
     def test_missing_range(self):
@@ -256,8 +256,8 @@ class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
         self.assertEqual(r.including_hidden.num_columns, 2)
 
         r = self.workbook.get("E3:F4")
-        self.assertEqual(r.get(), [[u'good1', u'good2']])
-        self.assertEqual(r.including_hidden.get(), [[u'good1', u'good2'], [u'bad1', u'bad2']])
+        self.assertEqual(r.get(), [['good1', 'good2']])
+        self.assertEqual(r.including_hidden.get(), [['good1', 'good2'], ['bad1', 'bad2']])
 
         # Hidden DisjointCol2 means that the visible table range is disjoint
         r = self.workbook.get("DisjointCol1")
@@ -288,10 +288,10 @@ class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
                 r.set(r.get())
                 self.assertEqual(old_val, r.get())
 
-        _getset_test(matrix, (2,3), (1,1), [[u'a1', u'b1', u'c1'], [u'a2', u'b2', u'c2']])
-        _getset_test(matrix.as_matrix, (2,3), (1,1), [[u'a1', u'b1', u'c1'], [u'a2', u'b2', u'c2']])
-        _getset_test(scalar, (1,1), (1,5), u'scalar')
-        _getset_test(scalar.as_matrix, (1,1), (1,5), [[u'scalar']])
+        _getset_test(matrix, (2,3), (1,1), [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']])
+        _getset_test(matrix.as_matrix, (2,3), (1,1), [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']])
+        _getset_test(scalar, (1,1), (1,5), 'scalar')
+        _getset_test(scalar.as_matrix, (1,1), (1,5), [['scalar']])
         _getset_test(col_vector, (4,1), (1,7), [1.0, 2.0, 3.0, 4.0])
         _getset_test(col_vector.as_matrix, (4,1), (1,7), [[1.0], [2.0], [3.0], [4.0]])
         _getset_test(row_vector, (1,4), (1,9), [1.0, 2.0, 3.0, 4.0])
@@ -318,9 +318,9 @@ class WorkbookWithTablesTestCase(ExcelWorkbookTestCase):
         
         _celltype_test(dates, [datetime.datetime] * 2)
         _celltype_test(currency, [decimal.Decimal] * 2)
-        _celltype_test(text, [unicode] * 2)
+        _celltype_test(text, [str] * 2)
         _celltype_test(percent, [float] * 2)
-        _celltype_test(general, [float, unicode])
+        _celltype_test(general, [float, str])
 
     @use_worksheet("CellTypes")
     def test_cell_types_compute(self):
@@ -451,7 +451,7 @@ class EmptyWorkbookTestCase(ExcelWorkbookTestCase):
     def test_write_and_read_view(self):
         """Tests that a python list can be inserted as a column (with xl.view), and then read
         back. A header is expected"""
-        x = range(1,10)
+        x = list(range(1,10))
         r = xl.view(x)
         self.assertEqual(x, r.get())
 
@@ -476,7 +476,7 @@ class EmptyWorkbookTestCase(ExcelWorkbookTestCase):
         def MyDouble(x):
             return x * 2
         r2 = xl.map(MyDouble, r)
-        self.assertEqual(map(MyDouble, x), r2.get())
+        self.assertEqual(list(map(MyDouble, x)), r2.get())
 
     def test_range_subclass_identity(self):
         """Tests that new Range instances adopt subclasses based on their shapes"""
@@ -500,7 +500,7 @@ class WorkbookWithJoinsTestCase(ExcelWorkbookTestCase):
         zip_key_b = self.workbook.get("D1:D50")
         zip_cities = self.workbook.get("E1:E50")  
         
-        self.assertEqual(zip_cities.get(), [u'Redmond', u'Austin', None])
+        self.assertEqual(zip_cities.get(), ['Redmond', 'Austin', None])
         self.assertEqual(zip_key_a.get(), [78705.0, 98052.0, 0.0])
         self.assertEqual(zip_key_b.get(), [98052.0, 78705.0, None])
 
@@ -512,7 +512,7 @@ class WorkbookWithJoinsTestCase(ExcelWorkbookTestCase):
         self.assertEqual(joined_cities_header.get(), "CityName")
         # Should snap to joined column data
         joined_cities_data = self.workbook.get("C:C")
-        self.assertEqual(joined_cities_data.get(), [u'Austin', u'Redmond', None])
+        self.assertEqual(joined_cities_data.get(), ['Austin', 'Redmond', None])
 
     @use_worksheet("MultiColumn")
     def test_join_multi_column(self):
@@ -527,13 +527,13 @@ class WorkbookWithJoinsTestCase(ExcelWorkbookTestCase):
 
         # First, check that both columns (excl. key) from table b made it to table a, and table a headers are intact
         a_cols_headers = self.workbook.range("C2:G2")
-        self.assertEqual(a_cols_headers.get(), [u'a_1', u'key', u'a_2', u'b_1', u'b_2'])
+        self.assertEqual(a_cols_headers.get(), ['a_1', 'key', 'a_2', 'b_1', 'b_2'])
         
         # Data in the joined columns
         a_joined_data = self.workbook.get("F3:G5")
         # $$$ get() is inconsistent, as of writing, about using tuples or lists. normalize
         a_joined_data_lists = [list(r) for r in a_joined_data.get()]
-        self.assertEqual(a_joined_data_lists, [[None, None], [u'b_1_1', u'b_2_1'], [u'b_1_4', u'b_2_4']])
+        self.assertEqual(a_joined_data_lists, [[None, None], ['b_1_1', 'b_2_1'], ['b_1_4', 'b_2_4']])
 
     @use_worksheet("Tiny")
     def test_join_tiny(self):
@@ -543,17 +543,17 @@ class WorkbookWithJoinsTestCase(ExcelWorkbookTestCase):
         xl.join(key_a, key_b)
 
         a_joined = self.workbook.range("E1:E2")
-        self.assertEqual(a_joined.get(), [u"tiny_v_1", 1.0])
+        self.assertEqual(a_joined.get(), ["tiny_v_1", 1.0])
 
 class PublicAPITestCase(unittest.TestCase):
     def test_import_all(self):
         """Tests that 'from xl import *' doesn't clobber map/apply/filter, but instead provides xlmap, etc."""
         
         globals = {} ; locals = {}
-        exec "from xl import *" in globals, locals
+        exec("from xl import *", globals, locals)
         all_vars = globals ; all_vars.update(locals)
 
-        import __builtin__
+        import builtins
         self.assertTrue(all_vars['xlmap'] is xl.xlmap)
         self.assertTrue(all_vars['xlapply'] is xl.xlapply)
         self.assertTrue(all_vars['xlfilter'] is xl.xlfilter)
@@ -583,7 +583,7 @@ class PerformanceTestCase(ExcelWorkbookTestCase):
         source_key = self.workbook.get("bigjoin_key_1")
         dest_key = self.workbook.get("bigjoin_key_2")
         xl.join(dest_key, source_key)
-        self.assertEqual( self.workbook.get("G2:H2").get(), [u"key_3222", u"val_3222"] )
+        self.assertEqual( self.workbook.get("G2:H2").get(), ["key_3222", "val_3222"] )
 
 class CollapsedMatrixTestCase(unittest.TestCase):
     def _CollapsedMatrix_from_index_sequence(self, row_indices, column_indices):
@@ -831,7 +831,7 @@ class CacheDecoratorsTestCase(unittest.TestCase):
         with xl.CacheManager.caching_enabled():
             self.assertEqual(a.add_one(10), 11)
             self.assertEqual( (a.add_one.stats.hits, a.add_one.stats.misses), (0, 1) )
-            for i in xrange(10): self.assertEqual(a.add_one(10), 11)
+            for i in range(10): self.assertEqual(a.add_one(10), 11)
             self.assertEqual( (a.add_one.stats.hits, a.add_one.stats.misses), (10, 1) )
 
             b = Adder()
@@ -879,12 +879,12 @@ if __name__ == '__main__':
     except SystemExit:
         # We wish to print the collected test timings after tests are run, but unittest.main()
         # always calls sys.exit (if targetting 2.7, we could instead pass exit=False)
-        print
+        print()
         _print_timed_test_results()
-        print
+        print()
         _print_cache_info()
-        print
-        print "Cache status during Excel tests:\t", "Enabled" if enable_cache else "Disabled"
+        print()
+        print("Cache status during Excel tests:\t", "Enabled" if enable_cache else "Disabled")
         _print_time_running_excel_tests()
-        print
+        print()
         raise

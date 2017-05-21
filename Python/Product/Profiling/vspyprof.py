@@ -1,5 +1,5 @@
 try:
-    import thread
+    import _thread
 except:
     import _thread as thread
 
@@ -52,8 +52,8 @@ def start_new_thread(func, args, kwargs = {}, *extra_args):
 
     return _start_new_thread(new_thread_wrapper, (func, args, kwargs))
 
-_start_new_thread = thread.start_new_thread
-thread.start_new_thread = start_new_thread
+_start_new_thread = _thread.start_new_thread
+_thread.start_new_thread = start_new_thread
 
 def start_profiling():
     # load as PyDll so we're called w/ the GIL held
@@ -87,7 +87,7 @@ def profile(file, globals_obj, locals_obj, profdll):
             exec(code, globals_obj, locals_obj)
         else:
             handle = start_profiling()
-            execfile(file, globals_obj, locals_obj)
+            exec(compile(open(file).read(), file, 'exec'), globals_obj, locals_obj)
     finally:
         if handle:
             pyprofdll.CloseThread(handle)

@@ -52,7 +52,7 @@ if mod_name and mod_name != '-':
             del sys.path[0]
 
         if not module:
-            print('__import__("' + mod_name + '")')
+            print(('__import__("' + mod_name + '")'))
             PythonScraper.write_analysis(output_path, {"members": {}, "doc": "Could not import compiled module"})
 elif mod_path and mod_path != '-':
     try:
@@ -69,7 +69,7 @@ elif mod_path and mod_path != '-':
             module = imp.load_dynamic(mod_name, mod_path)
     finally:
         if not module:
-            print('imp.load_dynamic("' + mod_name + '", "' + mod_path + '")')
+            print(('imp.load_dynamic("' + mod_name + '", "' + mod_path + '")'))
             PythonScraper.write_analysis(output_path, {"members": {}, "doc": "Could not import compiled module", "filename": mod_path})
 else:
     raise ValueError('No module name or path provided')
